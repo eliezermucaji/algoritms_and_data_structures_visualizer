@@ -2,67 +2,40 @@
 const startBtn = document.getElementById('control-button-play');
 
 // Aqui onde acontece toda magia do algoritmo de Dijkstra
-const graph = {};
+let graph = {};
 
 // A variavel matrix faz de conta ser
 const matrix = Array.from(document.getElementsByClassName('path-cell'));
 
 // Array que vai guardar os grafos visitados
-const visited = [];
+let visited = {};
 
 
 const createGraph = ()=>{
+    graph = {};
     if(matrix.length === 0){ return;}
-
-    // Pra que array seja one based index
-    visited.push(true);
-
-    const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
-    let position = 1;
+    const stepsAround = [[-1, 0], [0, 1], [1, 0], [0, -1]];
     for(let i = 1; i <= rows; ++i) {
         for(let j = 1; j <= columns; ++j) {
-            const elementId = `path-cell-${i}-${j}`;
-            const cell = document.getElementById(elementId);
-            if(cell.classList.contains('rock')) continue;
-            // Achar os vertices alcánsaveis desta celula
-            for(let k = 0; k < directions.length; ++k){
-                const direction = directions[k];
-                const neighborX = i + direction[0];
-                const neighborY = j + direction[1];
-                if(neighborX > rows || neighborY > columns) continue;
-                if(neighborX < 1 || neighborY < 1) continue;
-                
-                const neighborId = `path-cell-${neighborX}-${neighborY}`;
-                const myNeighbor = document.getElementById(neighborId);
-                //if(!myNeighbor) continue;
-                // Verificar se o meu visinho é uma rocha, caso for não se lhe adiciono como vertice visinha
-                // console.log(elementId);
-                if(myNeighbor.classList.contains('rock')) continue;
-
-                // Adiciono este meu visinho como sendo alcansável para mim
-                const meOnGraph = `${i}-${j}`;
-                const neighborOnGraph = `${neighborX}-${neighborY}`;
-
+            const cellId = `path-cell-${i}-${j}`;
+            const cellHtml = document.getElementById(cellId);
+            const meOnGraph = `${i}-${j}`;
+            for(let k = 0; k < stepsAround.length; ++k){
+                const step = stepsAround[k];
+                const x = i + step[0] ;
+                const y = j + step[1];
+                const point = `${x}-${y}`;
+                if(x > rows || y > columns || x < 1 || y < 1) continue;
                 if(!Object.hasOwn(graph, meOnGraph)) {
-                    graph[meOnGraph] = {
-
-                    };
+                    graph[meOnGraph] = [];
                 }
-                if(!Object.hasOwn(graph[meOnGraph], 'neighbors')) {
-                    graph[meOnGraph]['neighbors'] = [];
-                    graph[meOnGraph]['myPos'] = -1;
-                }
-                
-                graph[meOnGraph]['neighbors'].push(neighborOnGraph);
+                if(document.getElementById(`path-cell-${point}`).classList.contains('rock')) continue;
+                graph[meOnGraph].push(point);        
+            
             }
-            visited.push(false);
-            if(Object.hasOwn(graph, `${i}-${j}`)) {
-                graph[`${i}-${j}`]['myPos'] = position;
-            }
-            position++;
         }
-
     }
+    //console.log(graph);
 }
 
 const distances = [];
@@ -95,18 +68,43 @@ const dijkstra = ()=>{
             }
         });
     }
-    console.log(distances);
+    //console.log(distances);
 
+}
+
+const dfs = (inicio)=>{
+    if(visited[inicio]) return;
+    visited[inicio] = true;
+    if(!Object.hasOwn(graph, inicio)) return;
+    graph[inicio].forEach(node=>{
+        dfs(node);
+    })
 }
 
 const clearMemory =()=>{
 
 };
 
+const createVisited=()=>{
+    visited = {};
+    for(const key in graph) {
+        if(!Object.hasOwn(visited, key)) {
+            visited[key] = false;
+        }
+    }
+}
+
 const run =()=>{
     createGraph();
-    dijkstra();
-    clearMemory();
+    createVisited();
+    dfs('1-1');
+    if(visited['5-5']) {
+        console.log('Alcansável')
+    } else {
+        console.log('Não alcansável')
+    }
+    //dijkstra();
+    //clearMemory();
 }
 
 startBtn.addEventListener('click', run);
