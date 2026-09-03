@@ -38,39 +38,8 @@ const createGraph = ()=>{
     //console.log(graph);
 }
 
-const distances = [];
-distances.push(0);
-
+let distances = {};
 const INF = 1e9+7;
-
-const dijkstra = ()=>{
-    // Colocar um dos verteces de partida no princípio do object
-    distances[1] = 0;
-    visited[1] = true;
-    for (let index = 0; index < visited.length-1; index++) {
-        distances.push(INF);
-    }
-
-    for(const key in graph) {
-
-        const vertex = graph[key];
-        if(visited[vertex['myPos']] && vertex['myPos'] !== 1) {
-            console.log('Já visitado');
-            continue;
-        }
-        const a = vertex['myPos'];
-        const b = key;
-        visited[a] = true;
-
-        graph[key]['neighbors'].forEach(element => {
-            if(1+distances[a] < distances[graph[element]['myPos']]) {
-                distances[graph[element]['myPos']] = 1+distances[a];
-            }
-        });
-    }
-    //console.log(distances);
-
-}
 
 const dfs = (inicio)=>{
     if(visited[inicio]) return;
@@ -81,9 +50,53 @@ const dfs = (inicio)=>{
     })
 }
 
-const clearMemory =()=>{
+const startDistances = ()=>{
+    distances = {};
+    for(const key in graph) {
+        distances[key] = INF;
+    }
+}
 
-};
+const parentOf = {};
+
+const initPaths= ()=>{
+    for(const key in graph) {
+        parentOf[key] = [];
+    }
+}
+
+const bfs = (inicio)=>{
+    startDistances();
+    initPaths();
+    if(!Object.hasOwn(graph, inicio)) return;
+    distances[inicio] = 0;
+    visited[inicio] = true;
+    const queue = [];
+    queue.push(inicio);
+    while(queue.length != 0) {
+        const element = queue.shift();
+        const sizeNeighbors = graph[element].length;
+
+        for(let i = 0; i < sizeNeighbors; ++i) {
+            if(visited[graph[element][i]]) continue;
+            visited[graph[element][i]] = true;
+            distances[graph[element][i]] = distances[element] + 1;
+            parentOf[graph[element][i]] = element;
+            queue.push(graph[element][i]);
+        }
+    }
+}
+
+const rebuildPath = (destino)=>{
+    let dest = destino;
+    const path = [];
+    while(parentOf[dest] != dest) {
+        path.push(dest);
+        dest = parentOf[dest];
+    }
+
+    return path;
+}
 
 const createVisited=()=>{
     visited = {};
@@ -94,17 +107,31 @@ const createVisited=()=>{
     }
 }
 
+const pintarCaminho =(caminho)=>{
+    let timeBetween = caminho.length;
+    caminho.forEach(path=>{
+        const cell = document.getElementById(`path-cell-${path}`);
+        if(cell) {
+            if(!cell.classList.contains('path')) cell.classList.add('path');
+        }
+        
+    })
+}
+
 const run =()=>{
     createGraph();
     createVisited();
-    dfs('1-1');
+    //dfs('1-1');
+    bfs('1-1');
     if(visited['5-5']) {
-        console.log('Alcansável')
+        pintarCaminho(rebuildPath('5-5'));
     } else {
         console.log('Não alcansável')
     }
     //dijkstra();
     //clearMemory();
+    // para teste: const caminho = ['1-1', '1-2', '1-3', '2-3', '2-4', '2-5', '2-5', '2-6', '2-7', '3-7', '3-8', '4-8', '5-8', '6-8', '6-9','6-10', '6-11', '7-11', '8-11', '9-11', '10-11', '10-10', '10-9'];
+    
 }
 
 startBtn.addEventListener('click', run);
