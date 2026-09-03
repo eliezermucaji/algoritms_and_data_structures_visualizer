@@ -4,6 +4,9 @@ const dijkstraArena = document.createElement('div');
 dijkstraArena.className = 'dijkstra-arena';
 
 let selectedButton = '';
+const destines = [false, false];
+let origem = '';
+let destino = '';
 
 const rows = 10;
 const columns = 20;
@@ -30,12 +33,44 @@ const drawCellsField = ()=> {
         for(let j = 1; j <= columns; ++j) {
             const cell = createPathCell(i, j);
             cell.addEventListener('click', ()=>{
-                cell.classList.toggle(selectedButton);
+                if(selectedButton === 'destine') {
+                    cell.classList.toggle(selectedButton);
+                    if(!destines[0]) {
+                        origem = `${i}-${j}`;
+                        destines[0] = true;
+                    }else if(!destines[1]) {
+                        destino = `${i}-${j}`;
+                        destines[1] = true;
+                    }
+                }else {
+                    cell.classList.toggle(selectedButton);
+                }
             });
             cellFieldContainer.appendChild(cell);
         }
     }
     dijkstraArena.appendChild(cellFieldContainer);
+}
+
+const limparArena =()=>{
+    for(let i = 1; i <= rows; i++) {
+        for(let j = 1; j <= columns; j++) {
+            const cell = document.getElementById(`path-cell-${i}-${j}`);
+            cell.className = 'path-cell';
+        }
+    }
+    origem = '';
+    destino = '';
+    destines[0] = false;
+    destines [1] = false;
+}
+
+const limparCaminho =()=>{
+    const paths = document.getElementsByClassName('path');
+    const pathAsArray = Array.from(paths);
+    pathAsArray.forEach(path=>{
+        path.classList.remove('path');
+    });
 }
 
 const drawControls = ()=>{
@@ -47,6 +82,8 @@ const drawControls = ()=>{
     const location = createControlButton('location', 'Pontos');
     const rock = createControlButton('rock', 'Rochas');
     const start = createControlButton('play', 'Jogar');
+    const clearPath = createControlButton('clean', 'Limpar Caminho');
+    const clearField = createControlButton('clean', 'Limpar Arena');
 
     location.addEventListener('click', ()=>{
         const selectedButtons = document.getElementsByClassName('selected');
@@ -77,23 +114,17 @@ const drawControls = ()=>{
         }
     });
 
-    start.addEventListener('click', ()=>{
-        const selectedButtons = document.getElementsByClassName('selected');
-        Array.from(selectedButtons).forEach(lastSelectedButton=>{
-            if(lastSelectedButton.id !== start.id)
-            lastSelectedButton.classList.remove('selected');
-        });
-        start.classList.toggle('selected');
-        if(start.classList.contains('selected')) {
-            selectedButton = '';
-        }else {
-            selectedButton = '';
-        }
-    });
+    clearField.classList.add('clickble');
+    clearPath.classList.add('clickble');
+    start.classList.add('clickble');
+    clearField.addEventListener('click', limparArena);
+    clearPath.addEventListener('click', limparCaminho);
 
     controlsPannel.appendChild(location);
     controlsPannel.appendChild(rock);
     controlsPannel.appendChild(start);
+    controlsPannel.appendChild(clearPath);
+    controlsPannel.appendChild(clearField);
 
     dijkstraArena.appendChild(controlsPannel);
 }

@@ -122,9 +122,11 @@ const run =()=>{
     createGraph();
     createVisited();
     //dfs('1-1');
-    bfs('1-1');
-    if(visited['5-5']) {
-        pintarCaminho(rebuildPath('5-5'));
+    if(Object.hasOwn(graph, origem)) {
+        bfs(origem);
+    }
+    if(Object.hasOwn(graph, destino) && visited[destino]) {
+        pintarCaminho(rebuildPath(destino));
     } else {
         console.log('Não alcansável')
     }
