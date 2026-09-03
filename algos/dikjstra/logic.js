@@ -130,10 +130,6 @@ const run =()=>{
     } else {
         console.log('Não alcansável')
     }
-    //dijkstra();
-    //clearMemory();
-    // para teste: const caminho = ['1-1', '1-2', '1-3', '2-3', '2-4', '2-5', '2-5', '2-6', '2-7', '3-7', '3-8', '4-8', '5-8', '6-8', '6-9','6-10', '6-11', '7-11', '8-11', '9-11', '10-11', '10-10', '10-9'];
-    
 }
 
 startBtn.addEventListener('click', run);
