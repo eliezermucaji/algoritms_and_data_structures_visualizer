@@ -86,6 +86,7 @@ const bfs = (inicio)=>{
         }
     }
 }
+let identifier;
 
 const rebuildPath = (destino)=>{
     let dest = destino;
@@ -109,16 +110,35 @@ const createVisited=()=>{
 
 const pintarCaminho =(caminho)=>{
     let timeBetween = caminho.length;
-    caminho.forEach(path=>{
+
+    
+    let inicio = 0;
+    identifier = setInterval(()=>{
+        const path = caminho[inicio];
+        if(inicio >= timeBetween) {
+            clearInterval(identifier);
+        }
+        console.log(path);
+        console.log(inicio);
+        const cell = document.getElementById(`path-cell-${path}`);
+        if(cell) {
+            if(!cell.classList.contains('path')) cell.classList.add('path');
+        }
+        inicio++;
+    }, 150);
+
+    /*caminho.forEach(path=>{
         const cell = document.getElementById(`path-cell-${path}`);
         if(cell) {
             if(!cell.classList.contains('path')) cell.classList.add('path');
         }
         
-    })
+    })*/
 }
 
 const run =()=>{
+    clearInterval(identifier);
+    limparCaminho();
     createGraph();
     createVisited();
     //dfs('1-1');
