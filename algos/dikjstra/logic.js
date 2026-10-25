@@ -147,6 +147,8 @@ const run =()=>{
     }
     if(Object.hasOwn(graph, destino) && visited[destino]) {
         pintarCaminho(rebuildPath(destino));
+        const passos = distances[destino];
+        showNotification(`${passos} passos até o destino!`);
     } else {
         console.log('Não alcansável')
     }

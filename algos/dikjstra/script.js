@@ -7,6 +7,7 @@ let selectedButton = '';
 const destines = [false, false];
 let origem = '';
 let destino = '';
+let NotiTiming;
 
 const rows = 10;
 const columns = 20;
@@ -127,6 +128,18 @@ const drawControls = ()=>{
     controlsPannel.appendChild(clearField);
 
     dijkstraArena.appendChild(controlsPannel);
+}
+
+function showNotification(info) {
+    const notification = document.querySelector('.notification-pannel');
+    const inform = document.querySelector('.notification-info');
+    inform.innerText = info;
+    notification.classList.add('active');
+    clearTimeout(NotiTiming);
+    NotiTiming = setTimeout(()=>{
+        notification.classList.remove('active');
+    }, 3000);
+
 }
 
 const createControlButton =(buttonType, text)=>{
